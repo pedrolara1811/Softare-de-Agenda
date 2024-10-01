@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Address Book</title>
+<style>
+/* Basic styling for the page */
+body {
+    font-family: sans-serif;
+}
+
+#container {
+    width: 80%;
+    margin: 20px auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<div id="container">
+    <h1>Address Book</h1>
+
+    <h2>Add New Contact</h2>
+    <form id="addContactForm">
+        <label for="contactName">Contact Name:</label>
+        <input type="text" id="contactName" name="contactName" required><br>
+
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" name="lastName" required><br>
+
+        <label for="phone">Phone:</label>
+        <input type="number" id="phone" name="phone" required><br>
+
+        <label for="lada">Lada:</label>
+        <input type="number" id="lada" name="lada" required><br>
+
+        <h3>Address</h3>
+        <label for="street">Street:</label>
+        <input type="text" id="street" name="street" required><br>
+
+        <label for="houseNumber">House Number:</label>
+        <input type="number" id="houseNumber" name="houseNumber" required><br>
+
+        <label for="suburb">Suburb:</label>
+        <input type="text" id="suburb" name="suburb" required><br>
+
+        <label for="city">City:</label>
+        <input type="text" id="city" name="city" required><br>
+
+        <label for="state">State:</label>
+        <input type="text" id="state" name="state" required><br>
+
+        <label for="country">Country:</label>
+        <input type="text" id="country" name="country" required><br>
+
+        <label for="postalCode">Postal Code:</label>
+        <input type="number" id="postalCode" name="postalCode" required><br>
+
+        <button type="submit">Add Contact</button>
+    </form>
+
+    <h2>Contacts</h2>
+    <table id="contactTable">
+        <thead>
+            <tr>
+                <th>Contact Name</th>
+                <th>Last Name</th>
+                <th>Phone</th>
+                <th>Address</th>
+            </tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
+</div>
+
+<script>
+// JavaScript to handle form submission and contact display
+document.getElementById('addContactForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent default form submission
+
+    // Get form data
+    const formData = new FormData(this);
+
+    // Send data to server-side script for database insertion (using AJAX or Fetch API)
+    fetch('add_contact.php', { // Replace 'add_contact.php' with your actual server-side script
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Contact added successfully, update the table
+            loadContacts();
+            // Clear the form
+            this.reset();
+        } else {
+            // Handle error (display error message)
+            alert('Error adding contact: ' + data.error);
+        }
+    });
+});
+
+// Function to load contacts from the database and display them in the table
+function loadContacts() {
+    fetch('get_contacts.php') // Replace 'get_contacts.php' with your actual server-side script
+    .then(response => response.json())
+    .then(data => {
+        const tableBody = document.getElementById('contactTable').getElementsByTagName('tbody')[0];
+        tableBody.innerHTML = ''; // Clear existing rows
+
+        data.forEach(contact => {
+            const row = tableBody.insertRow();
+            const cell1 = row.insertCell();
+            const cell2 = row.insertCell();
+            const cell3 = row.insertCell();
+            const cell4 = row.insertCell();
+
+            cell1.innerHTML = contact.contact_name;
+            cell2.innerHTML = contact.last_name;
+            cell3.innerHTML = contact.lada + ' ' + contact.phone;
+            cell4.innerHTML = contact.street + ' ' + contact.house_number + ', ' + contact.suburb + ', ' + contact.city + ', ' + contact.state + ', ' + contact.country + ' - ' + contact.postal_code;
+        });
+    });
+}
+
+// Load contacts on page load
+loadContacts();
+</script>
+
+</body>
+</html>
